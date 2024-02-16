@@ -3,11 +3,11 @@ let bcrypt=require('bcrypt')
 let home= async(req,res)=>{
 
     try {
-        res.status(200).send('home')
+        res.status(204).send('home')
 
         
     } catch (error) {
-        res.status(404).send(error)
+        res.status(401).send(error)
         
     }
 }
@@ -17,7 +17,7 @@ let signup=async(req,res)=>{
         let {name,email,phone,username,password}=req.body
         let existmail= await gymData.findOne({email})
         if(existmail){
-            res.status(400).send('email alredy exist ')
+          return  res.status(400).json({message:'email alredy exist '})
 
         }
         let setPass= await bcrypt.hash(password,10)
@@ -25,11 +25,11 @@ let signup=async(req,res)=>{
 
         
 
-        res.status(200).json({message:'registration sucess',token:await result.addToken(),userid:result._id})
+       return res.status(202).json({message:'registration sucess',token:await result.addToken(),userid:result._id})
 
         
     } catch (error) {
-        res.status(404).json({message:'registarion faild'})
+        return res.status(404).json({message:'registarion faild'})
         
     }
 }
@@ -42,15 +42,15 @@ let login=async(req,res)=>{
         if(! emailexist2){
            return res.status(404).json({message:'email not exist'})
         }else if (! vpass) {
-           return res.status(404).json({message:'password not match'})
+           return res.status(400).json({message:'password not match'})
 
         
        }
-        res.status(404).json({message:'login sucess ',token:await emailexist2.addToken(),userid:emailexist2._id})
+      return  res.status(200).json({message:'login sucess ',token:await emailexist2.addToken(),userid:emailexist2._id})
 
         
     } catch (error) {
-        res.status(404).json({message:'login faild'})
+       return res.status(401).json({message:'login faild'})
         
     }
 }
@@ -60,9 +60,9 @@ let contact=async(req,res)=>{
     try {
         let{email,name,phone,comment}=req.body
         let com= await gymData.create({email,name,phone,comment})
-        res.status(200).json({message:'send sucess',com})
+      return  res.status(200).json({message:'send sucess',com})
     } catch (error) {
-        res.status(404).send(error)
+      return  res.status(404).send(error)
         
     }
 
